@@ -6,6 +6,8 @@ import android.view.View
 import android.widget.Button
 import androidx.core.text.HtmlCompat
 import com.tej.calculator.databinding.ActivityMainBinding
+import kotlin.math.log
+import kotlin.math.sqrt
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +38,13 @@ class MainActivity : AppCompatActivity() {
         binding.buMultiply.setOnClickListener { operationButtonClicked(it) }
         binding.buDivide.setOnClickListener { operationButtonClicked(it) }
         binding.buEquals.setOnClickListener { equalsButtonClicked() }
+        binding.buAC.setOnClickListener { clearAll() }
+        binding.backSpaceImageButton.setOnClickListener { backSpace() }
+        binding.buPercent.setOnClickListener { percent() }
+        binding.buLog.setOnClickListener { findLog() }
+        binding.buOneByX.setOnClickListener { findOneByX() }
+        binding.buSquare.setOnClickListener { squareIt() }
+        binding.buUnderRoot.setOnClickListener { findRoot() }
 
 
 
@@ -44,35 +53,97 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun equalsButtonClicked() {
-
-        val newNumber = binding.inputOuput.text.toString().toDouble()
-        var ans = 0.0
-        when(op) {
-            "+" -> {
-                ans = oldNumber.toDouble() + newNumber
-            }
-            "-" -> {
-                ans = oldNumber.toDouble() - newNumber
-            }
-            "*" -> {
-                ans = oldNumber.toDouble() * newNumber
-            }
-            "/" -> {
-                ans = oldNumber.toDouble() / newNumber
-            }
+    private fun squareIt() {
+        val inputData = binding.textView.text.toString()
+        if(inputData != ""){
+            val ans = inputData.toDouble() * inputData.toDouble()
+            binding.textView.text = ans.toString()
         }
-        binding.inputOuput.text = ans.toString()
-        binding.calciDetails.text = getString(R.string.calciDetails, oldNumber, op, newNumber.toString(), "=", ans.toString())
-        newOp = true
+    }
+
+    private fun findOneByX() {
+        val inputData = binding.textView.text.toString()
+        if(inputData != ""){
+            val ans = 1.0 / inputData.toDouble()
+            binding.textView.text = ans.toString()
+        }
+    }
+
+    private fun findRoot() {
+        val inputData = binding.textView.text.toString()
+        if(inputData != ""){
+            val ans = sqrt(inputData.toDouble())
+            binding.textView.text = ans.toString()
+        }
+    }
+
+    private fun findLog() {
+        val inputData = binding.textView.text.toString()
+        if(inputData != ""){
+            val ans = log(inputData.toDouble(), 2.0)
+            binding.textView.text = ans.toString()
+        }
+    }
+
+    private fun percent() {
+        val number = binding.textView.text.toString()
+        if(number != "") {
+            val newNumber = number.toDouble() / 100
+            binding.textView.text = newNumber.toString()
+        }
 
     }
 
-    private var op = "+"
+    private fun backSpace() {
+        val originalText = binding.textView.text.toString()
+        if(originalText != "") {
+            val newText = originalText.subSequence(0, originalText.length - 1)
+            binding.textView.text = newText
+        }
+    }
+
+    private fun clearAll() {
+        binding.textView.text = ""
+        binding.completeCalculation.text = ""
+        oldNumber = ""
+        ans = 0.0
+    }
+    var ans = 0.0
+    private fun equalsButtonClicked() {
+        val newInput = binding.textView.text.toString()
+        if(oldNumber != "" && newInput != ""){
+            val newNumber = newInput.toDouble()
+
+            when(op) {
+                "+" -> {
+                    ans = oldNumber.toDouble() + newNumber
+                }
+                "-" -> {
+                    ans = oldNumber.toDouble() - newNumber
+                }
+                "*" -> {
+                    ans = oldNumber.toDouble() * newNumber
+                }
+                "/" -> {
+                    ans = oldNumber.toDouble() / newNumber
+                }
+            }
+            binding.textView.text = ans.toString()
+            binding.completeCalculation.text = getString(R.string.calciDetails, oldNumber, op, newNumber.toString(), "=", ans.toString())
+            newOp = true
+            oldNumber = ans.toString()
+        }
+
+    }
+
+    private var op = ""
     private var oldNumber = ""
     private var newOp = true
     private fun operationButtonClicked(view: View) {
         val buttonSelected = view as Button
+        if(oldNumber != "" && !binding.completeCalculation.text.toString().contains("=")) {
+            equalsButtonClicked()
+        }
         when(buttonSelected.id) {
             binding.buPlus.id -> {
                 op = "+"
@@ -86,21 +157,25 @@ class MainActivity : AppCompatActivity() {
             binding.buDivide.id -> {
                 op = "/"
             }
-        }
-        oldNumber = binding.inputOuput.text.toString()
-        binding.calciDetails.text = getString(R.string.calciDetails,oldNumber, op, "", "", "")
-        binding.inputOuput.text = ""
-        newOp = true
 
+        }
+
+        oldNumber = binding.textView.text.toString()
+        if(oldNumber != "") {
+            binding.completeCalculation.text = getString(R.string.calciDetails,oldNumber, op, "", "", "")
+            binding.textView.text = ""
+            newOp = true
+
+        }
     }
 
     private fun numberButtonClicked(view: View) {
         if(newOp) {
-            binding.inputOuput.text = ""
+            binding.textView.text = ""
         }
         newOp = false
         val buSelected = view as Button
-        var buClickValue = binding.inputOuput.text.toString()
+        var buClickValue = binding.textView.text.toString()
         when(buSelected.id) {
             binding.bu0.id -> {
                 buClickValue += "0"
@@ -133,13 +208,17 @@ class MainActivity : AppCompatActivity() {
                 buClickValue += "9"
             }
             binding.buDot.id -> {
-                buClickValue += "."
+                if(!buClickValue.contains("."))
+                    buClickValue += "."
             }
             binding.buPlusMinus.id -> {
-                buClickValue = "-$buClickValue"
+                if(buClickValue.startsWith("-"))
+                    buClickValue = buClickValue.subSequence(1, buClickValue.length).toString()
+                else
+                    buClickValue = "-$buClickValue"
             }
         }
-        binding.inputOuput.text = buClickValue
+        binding.textView.text = buClickValue
     }
 
 }

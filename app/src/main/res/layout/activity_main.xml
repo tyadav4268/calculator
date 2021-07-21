@@ -10,14 +10,15 @@
 
 
     <TextView
-        android:id="@+id/calciDetails"
+        android:id="@+id/completeCalculation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="1dp"
-        android:textSize="17sp" />
+        android:textSize="17sp"
+        android:textColor="@color/black"/>
 
     <TextView
-        android:id="@+id/inputOuput"
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="1dp"
@@ -78,7 +79,8 @@
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@color/rowButtonBackground"
-                app:srcCompat="@drawable/ic_outline_backspace_24" />
+                app:srcCompat="@drawable/ic_outline_backspace_24"
+                android:contentDescription="@string/backspace" />
 
         </TableRow>
 
