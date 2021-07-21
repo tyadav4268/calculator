@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         oldNumber = ""
         ans = 0.0
     }
-    var ans = 0.0
+    private var ans = 0.0
     private fun equalsButtonClicked() {
         val newInput = binding.textView.text.toString()
         if(oldNumber != "" && newInput != ""){
@@ -212,10 +212,10 @@ class MainActivity : AppCompatActivity() {
                     buClickValue += "."
             }
             binding.buPlusMinus.id -> {
-                if(buClickValue.startsWith("-"))
-                    buClickValue = buClickValue.subSequence(1, buClickValue.length).toString()
+                buClickValue = if(buClickValue.startsWith("-"))
+                    buClickValue.subSequence(1, buClickValue.length).toString()
                 else
-                    buClickValue = "-$buClickValue"
+                    "-$buClickValue"
             }
         }
         binding.textView.text = buClickValue
